@@ -1,5 +1,8 @@
 # alphascout 📊
 
+[![smoke](https://github.com/marsyanggo/alphascout/actions/workflows/ci.yml/badge.svg)](https://github.com/marsyanggo/alphascout/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
 A [Claude Code](https://claude.com/claude-code) **skill** that turns Claude into an
 autonomous financial research analyst. Ask it to analyze, value, compare, or screen public
 companies and it pulls **real market data** — fundamentals, prices, valuation ratios, news,
