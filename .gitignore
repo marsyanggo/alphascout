@@ -1,0 +1,13 @@
+# Python virtualenv (recreate via install.sh / requirements.txt)
+.venv/
+
+# Secrets — API keys live in .env, NEVER commit
+.env
+*.env
+!.env.example
+
+# Python cruft
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store

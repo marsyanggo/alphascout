@@ -1,0 +1,3 @@
+# Only the yfinance backend needs third-party packages.
+# fd.py (Financial Datasets) and finnhub.py use the Python stdlib only.
+yfinance>=1.0
