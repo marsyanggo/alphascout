@@ -52,6 +52,41 @@ python3 scripts/finnhub.py recs MU
 python3 scripts/fd.py income AAPL --limit 4
 ```
 
+## Example
+
+**You:** `is NU overvalued? what's the upside?`
+
+**Claude (via alphascout)** pulls fundamentals + analyst data from yfinance and cross-checks
+the multiples and recommendation trend against Finnhub, then answers:
+
+> NU Holdings (NU) — $13.05, mktcap $63.4B. Cross-validated yfinance × Finnhub:
+>
+> | Metric | yfinance | Finnhub |
+> |--------|----------|---------|
+> | P/E (TTM) | 20.1 | 19.9 |
+> | ROE | 30.1% | 28.9% |
+> | Rev growth | +43.7% | +45.4% |
+>
+> Revenue grew 3.5× in three years (loss → 27% net margin); ROE ~30% is top-tier for a bank.
+> Forward P/E ~11 with EPS forecast to keep compounding ~30%/yr → **not expensive for the
+> growth**. Analyst consensus **Strong Buy**, mean target **$19.39 (+49%)**, range
+> $15.3 (+17%) to $22 (+69%). Trades near its 52-week low despite strong fundamentals.
+>
+> **Upside:** base case ~+50%; bull ~+70–85%; bear +17%. Main risk is Brazil/Mexico macro
+> (rates, FX, credit), not the franchise. *Educational only — not financial advice.*
+
+Under the hood that was roughly:
+
+```bash
+.venv/bin/python -W ignore scripts/yf.py metrics  NU
+.venv/bin/python -W ignore scripts/yf.py forecast NU
+python3 scripts/finnhub.py metrics NU      # cross-check multiples / margins
+python3 scripts/finnhub.py recs    NU      # recommendation trend
+```
+
+The skill picks the backend, batches the calls, reconciles any disagreements between sources,
+and leads with the conclusion — you just ask the question.
+
 ## ⚠️ Disclaimer
 
 For **educational and informational purposes only**. Not financial advice. Data may be
