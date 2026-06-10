@@ -1,8 +1,16 @@
-# RPG_Role — 復古 RPG 角色點陣圖生成器 🎮
+# RPG_Role — 復古 RPG 素材生成器 🎮
 
-自動生成 DQ(勇者鬥惡龍)風格的復古像素角色,每個角色附帶完整動作組:
-**待機、移動(四方向)、攻擊、絕招、施法、受傷、倒下**。
-不需要美術功底 — 給定職業 + 種子(seed)就能穩定重現同一隻角色。
+自動生成 DQ(勇者鬥惡龍)風格的復古像素遊戲素材:**角色、怪物、道具圖示、
+大世界地圖、地下迷宮**,全部給定種子(seed)即可穩定重現。
+角色與怪物附帶完整動作組:**待機、移動(四方向)、攻擊、絕招、施法、受傷、倒下**。
+
+```bash
+python3 -m rpg_role party --seed 1 --out out/ --gifs    # 六職業角色
+python3 -m rpg_role horde --seed 1 --out out/ --gifs    # 全部怪物
+python3 -m rpg_role items --out out/                     # 60 種道具圖示
+python3 -m rpg_role map --kind overworld --seed 7       # 大世界地圖
+python3 -m rpg_role map --kind dungeon --seed 7         # 地下迷宮
+```
 
 ## 兩種畫風
 
@@ -17,6 +25,13 @@ LPC 素材已抽選 vendor 在 `assets/lpc/`(CC-BY-SA 3.0 / GPL 3.0,
 ## 特色
 
 - **6 種職業**:勇者 hero、戰士 warrior、魔法師 mage、僧侶 priest、盜賊 thief、武鬥家 monk
+- **8 類怪物**:獸人 orc、哥布林 goblin、骷髏 skeleton、殭屍 zombie、狼人 wolfman、
+  蜥蜴人 lizardman、牛頭人 minotaur(LPC 風格,與角色同動作組)+
+  史萊姆 slime 六色(程序生成,經典彈跳動畫)
+- **60 種道具圖示**(32×32 程序生成):武器/防具/藥水/卷軸/寶石/金幣/鑰匙/寶箱…
+  輸出 atlas.png + atlas.json
+- **地圖生成**:大世界(噪聲生成大陸、沙灘/森林/山脈/沼澤、城堡+城鎮+洞窟+道路)
+  與地下迷宮(房間+走廊+樓梯+寶箱,保證全圖連通),輸出 map.png / map.json / tileset.png
 - **程序化生成**:膚色、髮型、髮色、配色由 seed 決定,同一 seed 永遠生成同一隻角色
 - **完整動作表**(每個動作 × 四方向):
 
@@ -102,7 +117,10 @@ python3 tests/test_generator.py
 
 ## Roadmap
 
-- [ ] 更精緻的圖源後端(整合開源像素素材庫,如 LPC)
-- [ ] 怪物生成器
-- [ ] 地圖 tile 生成器
+- [x] 高精緻圖源後端(LPC 開源像素素材庫)
+- [x] 怪物生成器(LPC 人形怪 + 程序史萊姆)
+- [x] 道具圖示生成器
+- [x] 地圖生成器(大世界 + 迷宮)
+- [ ] 女性角色基底 / 更多部件(披風、盾牌、更多武器)
+- [ ] 大型 Boss 怪物(龍、巨人)
 - [ ] 之後搭配故事專案組成完整遊戲

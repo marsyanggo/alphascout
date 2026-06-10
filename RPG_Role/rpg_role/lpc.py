@@ -21,7 +21,8 @@ from pathlib import Path
 
 from PIL import Image
 
-from .lpc_manifest import BODY, HAIR, HAIR_COLORS, HAIR_STYLES, JOBS, SKINS
+from .lpc_manifest import (BODY, HAIR, HAIR_COLORS, HAIR_STYLES, RECIPES,
+                           SKINS)
 from .palettes import FX_MAGIC, FX_SPECIAL
 
 FRAME = 64
@@ -42,19 +43,21 @@ GIF_BG = (48, 44, 70)
 
 
 class LpcCharacter:
-    """Resolved layers + loaded sheets for one (job, seed)."""
+    """Resolved layers + loaded sheets for one (job-or-monster, seed)."""
 
     def __init__(self, job: str, seed: int):
-        if job not in JOBS:
-            raise ValueError(f"unknown job {job!r}; choose from {sorted(JOBS)}")
+        if job not in RECIPES:
+            raise ValueError(
+                f"unknown job/monster {job!r}; choose from {sorted(RECIPES)}")
         self.job, self.seed = job, seed
-        spec = JOBS[job]
+        spec = RECIPES[job]
         rng = random.Random(f"lpc:{job}:{seed}")
-        values = {"skin": rng.choice(SKINS)}
+        values = {"skin": rng.choice(spec.get("skins", SKINS))}
         for key, choices in spec.get("shared", {}).items():
             values[key] = rng.choice(choices)
 
-        self.layers = [(p["z"], p["path"].format(**values)) for p in BODY]
+        self.layers = [(p["z"], p["path"].format(**values))
+                       for p in spec.get("body", BODY)]
         if spec["hair"]:
             style = rng.choice([s for s in spec["hair"] if s in HAIR_STYLES])
             self.layers.append((HAIR["z"], HAIR["path"].format(

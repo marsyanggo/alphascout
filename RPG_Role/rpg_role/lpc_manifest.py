@@ -137,24 +137,141 @@ JOBS = {
     },
 }
 
+# Monster recipes use the same machinery as JOBS but may override the body
+# ("body" parts replace the default human body+head) and the {skin} pool.
+MONSTERS = {
+    "skeleton": {
+        "body": [{"z": 10, "path": "body/bodies/skeleton/skeleton"}],
+        "hair": [],
+        "attack_anim": "slash",
+        "shared": {},
+        "parts": [
+            {"z": 140, "path": "weapon/sword/arming/universal/fg/steel"},
+            {"z": 9, "path": "weapon/sword/arming/universal/bg/steel"},
+        ],
+        "oversize": [
+            {"anim": "slash", "z": 150, "size": 128,
+             "path": "weapon/sword/arming/attack_slash/fg/steel"},
+            {"anim": "slash", "z": 8, "size": 128,
+             "path": "weapon/sword/arming/attack_slash/bg/steel"},
+        ],
+    },
+    "zombie": {
+        "body": [{"z": 10, "path": "body/bodies/zombie/zombie"},
+                 {"z": 100, "path": "head/heads/zombie/adult"}],
+        "hair": [],
+        "attack_anim": "slash",  # bare-handed claw
+        "shared": {"pant": ["brown", "charcoal"]},
+        "parts": [{"z": 20, "path": "legs/pants/male/{pant}"}],
+        "oversize": [],
+    },
+    "orc": {
+        "skins": ["green", "olive", "taupe"],
+        "body": [{"z": 10, "path": "body/bodies/male/{skin}"},
+                 {"z": 100, "path": "head/heads/orc/male/{skin}"}],
+        "hair": [],
+        "attack_anim": "slash",
+        "shared": {"lea": ["brown", "slate"],
+                   "pant": ["brown", "black"]},
+        "parts": [
+            {"z": 60, "path": "torso/armour/leather/male/{lea}"},
+            {"z": 20, "path": "legs/pants/male/{pant}"},
+            {"z": 25, "path": "feet/boots/male/black"},
+            {"z": 140, "path": "weapon/blunt/waraxe/waraxe"},
+            {"z": 9, "path": "weapon/blunt/waraxe/behind/waraxe"},
+        ],
+        "oversize": [
+            {"anim": "slash", "z": 150, "size": 192,
+             "path": "weapon/blunt/waraxe/attack_slash/waraxe"},
+            {"anim": "slash", "z": 8, "size": 192,
+             "path": "weapon/blunt/waraxe/attack_slash/behind/waraxe"},
+        ],
+    },
+    "goblin": {
+        "skins": ["green", "pale_green", "olive"],
+        "body": [{"z": 10, "path": "body/bodies/male/{skin}"},
+                 {"z": 100, "path": "head/heads/goblin/adult/{skin}"}],
+        "hair": [],
+        "attack_anim": "slash",
+        "shared": {"pant": ["brown", "charcoal"]},
+        "parts": [
+            {"z": 20, "path": "legs/pants/male/{pant}"},
+            {"z": 140, "path": "weapon/sword/dagger/dagger"},
+            {"z": 9, "path": "weapon/sword/dagger/behind/dagger"},
+        ],
+        "oversize": [],
+    },
+    "wolfman": {
+        "skins": ["fur_grey", "fur_brown", "fur_black"],
+        "body": [{"z": 10, "path": "body/bodies/male/{skin}"},
+                 {"z": 100, "path": "head/heads/wolf/male/{skin}"}],
+        "hair": [],
+        "attack_anim": "slash",  # claws
+        "shared": {"pant": ["brown", "black"]},
+        "parts": [{"z": 20, "path": "legs/pants/male/{pant}"}],
+        "oversize": [],
+    },
+    "lizardman": {
+        "skins": ["green", "dark_green", "olive"],
+        "body": [{"z": 10, "path": "body/bodies/male/{skin}"},
+                 {"z": 100, "path": "head/heads/lizard/male/{skin}"}],
+        "hair": [],
+        "attack_anim": "thrust",  # shaman staff
+        "shared": {"staff": ["medium", "dark"],
+                   "pant": ["forest", "brown"]},
+        "parts": [
+            {"z": 20, "path": "legs/skirts/plain/male/{pant}"},
+            {"z": 140, "path": "weapon/magic/gnarled/universal/foreground/{staff}"},
+            {"z": 9, "path": "weapon/magic/gnarled/universal/background/{staff}"},
+        ],
+        "oversize": [
+            {"anim": "thrust", "z": 150, "size": 192,
+             "path": "weapon/magic/gnarled/thrust/foreground/{staff}"},
+            {"anim": "thrust", "z": 8, "size": 192,
+             "path": "weapon/magic/gnarled/thrust/background/{staff}"},
+        ],
+    },
+    "minotaur": {
+        "skins": ["fur_brown", "fur_tan", "fur_black"],
+        "body": [{"z": 10, "path": "body/bodies/male/{skin}"},
+                 {"z": 100, "path": "head/heads/minotaur/male/{skin}"}],
+        "hair": [],
+        "attack_anim": "slash",
+        "shared": {"sash": ["black", "maroon"]},
+        "parts": [
+            {"z": 65, "path": "torso/waist/sash/male/{sash}"},
+            {"z": 20, "path": "legs/pants/male/brown"},
+            {"z": 140, "path": "weapon/blunt/waraxe/waraxe"},
+            {"z": 9, "path": "weapon/blunt/waraxe/behind/waraxe"},
+        ],
+        "oversize": [
+            {"anim": "slash", "z": 150, "size": 192,
+             "path": "weapon/blunt/waraxe/attack_slash/waraxe"},
+            {"anim": "slash", "z": 8, "size": 192,
+             "path": "weapon/blunt/waraxe/attack_slash/behind/waraxe"},
+        ],
+    },
+}
+
+RECIPES = {**JOBS, **MONSTERS}
+
 
 def all_asset_paths() -> set[str]:
-    """Every asset file any (job, seed) combination can reference."""
+    """Every asset file any (recipe, seed) combination can reference."""
     paths: set[str] = set()
-    for part in BODY:
-        for skin in SKINS:
-            paths.add(part["path"].format(skin=skin))
     for style in HAIR_STYLES:
         for color in HAIR_COLORS:
             paths.add(HAIR["path"].format(hair_style=style, hair=color))
-    for job in JOBS.values():
-        keys = job.get("shared", {})
-        names = sorted(keys)
+    for recipe in RECIPES.values():
+        skins = recipe.get("skins", SKINS)
+        keys = recipe.get("shared", {})
         # Cartesian product over shared choices (small: <= 3 keys, <= 3 each).
         combos = [{}]
-        for name in names:
+        for name in sorted(keys):
             combos = [{**c, name: v} for c in combos for v in keys[name]]
-        for part in job["parts"] + job.get("oversize", []):
+        combos = [{**c, "skin": s} for c in combos for s in skins]
+        body = recipe.get("body", BODY)
+        for part in body + recipe["parts"] + recipe.get("oversize", []):
             for combo in combos:
                 paths.add(part["path"].format(**combo))
     return {p + ".png" for p in paths}

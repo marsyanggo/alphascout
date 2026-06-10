@@ -73,10 +73,92 @@ def test_lpc_deterministic():
     assert png_bytes(a.sheet) == png_bytes(b.sheet)
 
 
+def test_lpc_monsters():
+    from rpg_role import lpc
+    from rpg_role.lpc_manifest import MONSTERS
+
+    for m in MONSTERS:
+        ch = lpc.LpcCharacter(m, seed=2)
+        sheet = lpc.build_sheet(ch, "attack")
+        assert sheet.width > 0, m
+
+
+def test_slimes():
+    from rpg_role.monsters import SLIME_ANIMS, SLIME_COLORS, _draw_slime
+
+    for color, palette in SLIME_COLORS.items():
+        for spec in SLIME_ANIMS.values():
+            for f in spec["frames"]:
+                img = _draw_slime(palette, *f)
+                assert img.size == (FRAME, FRAME)
+                assert img.getbbox(), f"empty slime frame {color} {f}"
+
+
+def test_items():
+    from rpg_role.items import catalog, render_icon
+
+    seen = set()
+    for item_id, item_type, variant in catalog():
+        assert item_id not in seen
+        seen.add(item_id)
+        icon = render_icon(item_type, variant)
+        assert icon.size == (FRAME, FRAME)
+        assert icon.getbbox(), f"empty icon {item_id}"
+    assert len(seen) >= 50
+
+
+def test_overworld():
+    from rpg_role.worldmap import OVERWORLD_TILES, generate_overworld
+
+    a = generate_overworld(40, 30, 3)
+    b = generate_overworld(40, 30, 3)
+    assert a == b, "overworld not deterministic"
+    assert len(a["tiles"]) == 30 and len(a["tiles"][0]) == 40
+    used = {t for row in a["tiles"] for t in row}
+    assert used <= set(OVERWORLD_TILES)
+    kinds = {f["type"] for f in a["features"]}
+    assert {"castle", "town"} <= kinds
+
+
+def test_dungeon():
+    from rpg_role.worldmap import DUNGEON_TILES, generate_dungeon
+
+    d = generate_dungeon(36, 24, 4)
+    used = {t for row in d["tiles"] for t in row}
+    assert used <= set(DUNGEON_TILES)
+    flat = [t for row in d["tiles"] for t in row]
+    assert flat.count("stairs_up") == 1 and flat.count("stairs_down") == 1
+    # Every walkable tile must be reachable from the entry stairs.
+    h, w = len(d["tiles"]), len(d["tiles"][0])
+    start = next((x, y) for y in range(h) for x in range(w)
+                 if d["tiles"][y][x] == "stairs_up")
+    seen, todo = {start}, [start]
+    while todo:
+        x, y = todo.pop()
+        for nx, ny in ((x+1, y), (x-1, y), (x, y+1), (x, y-1)):
+            if (0 <= nx < w and 0 <= ny < h and (nx, ny) not in seen
+                    and d["tiles"][ny][nx] != "wall"):
+                seen.add((nx, ny))
+                todo.append((nx, ny))
+    walkable = {(x, y) for y in range(h) for x in range(w)
+                if d["tiles"][y][x] != "wall"}
+    assert seen == walkable, "dungeon has unreachable areas"
+
+
+def test_tiles_render():
+    from rpg_role.worldmap import (DUNGEON_TILES, OVERWORLD_TILES, TILE,
+                                   draw_tile)
+
+    for t in OVERWORLD_TILES + DUNGEON_TILES:
+        img = draw_tile(t, 1)
+        assert img.size == (TILE, TILE), t
+
+
 if __name__ == "__main__":
     for fn in (test_all_jobs_all_animations, test_deterministic,
                test_seeds_differ, test_metadata, test_lpc_all_jobs,
-               test_lpc_deterministic):
+               test_lpc_deterministic, test_lpc_monsters, test_slimes,
+               test_items, test_overworld, test_dungeon, test_tiles_render):
         fn()
         print(f"ok: {fn.__name__}")
     print("all tests passed")

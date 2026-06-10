@@ -19,6 +19,22 @@ authors below and license the derived art under the same terms.
 - https://opengameart.org/content/lpc-jump-expanded
 - https://opengameart.org/content/lpc-character-bases
 
+## body/bodies/skeleton
+- Authors: bluecarrot16, Johannes Sj?lund (wulax), Stephen Challener (Redshrike)
+- Licenses: CC-BY-SA 3.0, GPL 3.0
+- https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles
+- https://opengameart.org/content/lpc-medieval-fantasy-character-sprites
+- https://opengameart.org/content/lpc-skeleton
+- https://opengameart.org/content/lpc-character-bases
+
+## body/bodies/zombie
+- Authors: Stephen Challener (Redshrike), Johannes Sj?lund (wulax), Sander Frenken (castelonia), Benjamin K. Smith (BenCreating), bluecarrot16
+- Licenses: CC-BY-SA 3.0, GPL 3.0
+- https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles
+- https://opengameart.org/content/lpc-medieval-fantasy-character-sprites
+- https://opengameart.org/content/lpc-zombie
+- https://opengameart.org/content/lpc-character-bases
+
 ## feet/boots
 - Authors: bluecarrot16, Nila122
 - Licenses: OGA-BY 3.0, CC-BY-SA 3.0, GPL 2.0, GPL 3.0
@@ -84,10 +100,52 @@ authors below and license the derived art under the same terms.
 - https://opengameart.org/content/lpc-pointed-hats
 - https://opengameart.org/content/expanded-ulpc-head-accessories-facial-assets-hats-helmets
 
+## head/heads/goblin
+- Authors: bluecarrot16, Stephen Challener (Redshrike), William.Thomsponj
+- Licenses: OGA-BY 3.0, CC-BY 4.0, GPL 2.0, GPL 3.0
+- https://opengameart.org/content/lpc-goblin
+- https://opengameart.org/content/lpc-folk
+
 ## head/heads/human/male
 - Authors: bluecarrot16, Benjamin K. Smith (BenCreating), Stephen Challener (Redshrike)
 - Licenses: OGA-BY 3.0, CC-BY-SA 3.0, GPL 3.0
 - https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles
+- https://opengameart.org/content/lpc-character-bases
+
+## head/heads/lizard/male
+- Authors: bluecarrot16, Benjamin K. Smith (BenCreating), Nila122
+- Licenses: OGA-BY 3.0, CC-BY-SA 3.0, GPL 3.0
+- https://opengameart.org/content/drakes-and-lizardfolk
+- https://opengameart.org/content/lpc-character-bases
+
+## head/heads/minotaur
+- Authors: Evert, Nila122, Daniel Eddeland (daneeklu)
+- Licenses: CC-BY-SA 3.0, GPL 3.0
+- https://opengameart.org/content/lpc-style-farm-animals
+- https://opengameart.org/content/lpc-lizard-headgear
+- https://opengameart.org/content/lpc-faun-and-minotaur
+
+## head/heads/orc/male
+- Authors: bluecarrot16, Matthew Krohn (makrohn), Stephen Challener (Redshrike), Zi Ye
+- Licenses: CC-BY-SA 3.0, GPL 3.0
+- https://opengameart.org/content/four-characters-my-lpc-entries
+- https://opengameart.org/content/sinbad-the-ogre
+- https://opengameart.org/content/lpc-male-sheets
+- https://opengameart.org/content/lpc-character-bases
+
+## head/heads/wolf/male
+- Authors: bluecarrot16, Sander Frenken (castelonia), Benjamin K. Smith (BenCreating), William.Thompsonj, Stephen Challener (Redshrike)
+- Licenses: CC-BY-SA 3.0, GPL 3.0
+- https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles
+- https://opengameart.org/content/lpc-wolf-animation
+- https://opengameart.org/content/lpc-wolfman
+- https://opengameart.org/content/lpc-character-bases
+
+## head/heads/zombie
+- Authors: bluecarrot16, Benjamin K. Smith (BenCreating), Sander Frenken (castelonia), Stephen Challener (Redshrike)
+- Licenses: CC-BY-SA 3.0, GPL 3.0
+- https://opengameart.org/content/liberated-pixel-cup-lpc-base-assets-sprites-map-tiles
+- https://opengameart.org/content/lpc-zombie
 - https://opengameart.org/content/lpc-character-bases
 
 ## legs/armour/plate
@@ -106,6 +164,12 @@ authors below and license the derived art under the same terms.
 - Authors: bluecarrot16, Pierre Vigier (pvigier), Johannes Sjölund (wulax)
 - Licenses: OGA-BY 3.0, CC-BY-SA 3.0, GPL 3.0
 - https://opengameart.org/content/lpc-medieval-fantasy-character-sprites
+
+## torso/armour/leather
+- Authors: Johannes Sjölund (wulax)
+- Licenses: OGA-BY 3.0, CC-BY-SA 3.0, GPL 3.0
+- https://opengameart.org/content/lpc-medieval-fantasy-character-sprites
+- http://opengameart.org/content/lpc-clothing-updates
 
 ## torso/armour/plate/male
 - Authors: recolor by bigbeargames
