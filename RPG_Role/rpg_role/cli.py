@@ -26,11 +26,12 @@ from .palettes import JOBS
 from .sheets import export_character
 
 
-def _add_common(p: argparse.ArgumentParser, style: bool = True) -> None:
+def _add_common(p: argparse.ArgumentParser, mini: bool = True) -> None:
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--out", default="out")
-    if style:
-        p.add_argument("--style", choices=["lpc", "mini"], default="lpc")
+    styles = ["hd", "lpc"] + (["mini"] if mini else [])
+    p.add_argument("--style", choices=styles, default="hd")
+    if mini:
         p.add_argument("--scale", type=int, default=1,
                        help="integer upscale (mini style only)")
     p.add_argument("--gifs", action="store_true", help="write GIF previews")
@@ -54,10 +55,10 @@ def main(argv: list[str] | None = None) -> None:
                      choices=sorted(MONSTERS) + ["slime"])
     mon.add_argument("--color", choices=sorted(SLIME_COLORS),
                      default="blue", help="slime color")
-    _add_common(mon, style=False)
+    _add_common(mon, mini=False)
 
     horde = sub.add_parser("horde", help="generate every monster at once")
-    _add_common(horde, style=False)
+    _add_common(horde, mini=False)
 
     items = sub.add_parser("items", help="generate the item icon set")
     items.add_argument("--out", default="out")
@@ -91,32 +92,33 @@ def main(argv: list[str] | None = None) -> None:
         print(export_map_cmd(args))
         return
 
+    hd = getattr(args, "style", "hd") == "hd"
+
     if args.cmd == "monster":
         if args.mtype == "slime":
-            print(export_slime(args.color, args.out, gifs=args.gifs))
+            print(export_slime(args.color, args.out, gifs=args.gifs, hd=hd))
         else:
             print(lpc.export_character(args.mtype, args.seed, args.out,
-                                       gifs=args.gifs))
+                                       gifs=args.gifs, hd=hd))
         return
 
     if args.cmd == "horde":
         for m in sorted(MONSTERS):
-            print(f"{m}: "
-                  f"{lpc.export_character(m, args.seed, args.out, gifs=args.gifs)}")
+            print(f"{m}: {lpc.export_character(m, args.seed, args.out, gifs=args.gifs, hd=hd)}")
         for color in sorted(SLIME_COLORS):
             print(f"slime_{color}: "
-                  f"{export_slime(color, args.out, gifs=args.gifs)}")
+                  f"{export_slime(color, args.out, gifs=args.gifs, hd=hd)}")
         return
 
     jobs = sorted(JOBS) if args.cmd == "party" else [args.job]
     for job in jobs:
-        if args.style == "lpc":
-            root = lpc.export_character(job, args.seed, args.out,
-                                        gifs=args.gifs)
-        else:
+        if args.style == "mini":
             ch = make_character(job, args.seed)
             root = export_character(ch, args.out, scale=args.scale,
                                     gifs=args.gifs)
+        else:
+            root = lpc.export_character(job, args.seed, args.out,
+                                        gifs=args.gifs, hd=hd)
         print(f"{job}: {root}")
 
 

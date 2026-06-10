@@ -81,21 +81,26 @@ def _draw_slime(color: Ramp, squash: int, lean: int,
 
 
 def export_slime(color: str, out_dir: str | Path, scale: int = 1,
-                 gifs: bool = False) -> Path:
+                 gifs: bool = False, hd: bool = False) -> Path:
     if color not in SLIME_COLORS:
         raise ValueError(
             f"unknown slime color {color!r}; choose from {sorted(SLIME_COLORS)}")
     palette = SLIME_COLORS[color]
-    root = Path(out_dir) / f"slime_{color}"
+    cell = FRAME * (4 if hd else 1)
+    root = Path(out_dir) / (f"slime_{color}_hd" if hd else f"slime_{color}")
     root.mkdir(parents=True, exist_ok=True)
 
-    meta = {"character": {"monster": "slime", "color": color},
-            "frame_size": FRAME, "scale": scale, "animations": {}}
+    meta = {"character": {"monster": "slime", "color": color,
+                          "style": "hd" if hd else "mini"},
+            "frame_size": cell, "scale": scale, "animations": {}}
     for name, spec in SLIME_ANIMS.items():
         frames = [_draw_slime(palette, *f) for f in spec["frames"]]
-        sheet = Image.new("RGBA", (len(frames) * FRAME, FRAME), (0, 0, 0, 0))
+        if hd:
+            from .hd import enhance
+            frames = [enhance(f) for f in frames]
+        sheet = Image.new("RGBA", (len(frames) * cell, cell), (0, 0, 0, 0))
         for i, f in enumerate(frames):
-            sheet.paste(f, (i * FRAME, 0))
+            sheet.paste(f, (i * cell, 0))
         if scale > 1:
             sheet = sheet.resize((sheet.width * scale, sheet.height * scale),
                                  Image.NEAREST)
@@ -106,9 +111,10 @@ def export_slime(color: str, out_dir: str | Path, scale: int = 1,
         if gifs:
             imgs = []
             for f in frames:
-                bg = Image.new("RGBA", (FRAME, FRAME), (*GIF_BG, 255))
+                bg = Image.new("RGBA", (cell, cell), (*GIF_BG, 255))
                 bg.alpha_composite(f)
-                bg = bg.resize((FRAME * 4, FRAME * 4), Image.NEAREST)
+                if not hd:
+                    bg = bg.resize((cell * 4, cell * 4), Image.NEAREST)
                 imgs.append(bg.convert("P", palette=Image.ADAPTIVE))
             imgs[0].save(root / f"preview_{name}.gif", save_all=True,
                          append_images=imgs[1:],

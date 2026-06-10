@@ -12,12 +12,17 @@ python3 -m rpg_role map --kind overworld --seed 7       # 大世界地圖
 python3 -m rpg_role map --kind dungeon --seed 7         # 地下迷宮
 ```
 
-## 兩種畫風
+## 三種畫風
 
 | 風格 | 影格 | 來源 | 適合 |
 |------|------|------|------|
-| **lpc**(預設) | 64×64(武器揮擊 128/192) | [Universal LPC Spritesheet](https://github.com/sanderfrenken/Universal-LPC-Spritesheet-Character-Generator) 美術師手繪圖層合成 | 正式遊戲畫面 |
+| **hd**(預設) | 256×256(武器揮擊 512/768) | LPC 圖層合成 + HD-2D 處理管線 | DQ3 HD 風格的正式畫面 |
+| **lpc** | 64×64(武器揮擊 128/192) | [Universal LPC Spritesheet](https://github.com/sanderfrenken/Universal-LPC-Spritesheet-Character-Generator) 美術師手繪圖層合成 | 經典 16-bit 風 |
 | **mini** | 32×32 | 純程式繪製(零素材依賴) | 雛型 / 小地圖 / 復古極簡風 |
+
+**hd 管線**(`rpg_role/hd.py`):scale2x×2 像素放大(圓滑階梯邊緣)→ 邊緣抗鋸齒
+→ 縱向光影分級 + 頂部輪光 → 飽和度/對比增強 → 細描邊 → 腳下柔和落影。
+全部確定性處理,同 seed 輸出完全相同。
 
 LPC 素材已抽選 vendor 在 `assets/lpc/`(CC-BY-SA 3.0 / GPL 3.0,
 發佈遊戲時需附 `assets/lpc/ATTRIBUTION.md` 的作者名單;本專案程式碼本身為 MIT)。

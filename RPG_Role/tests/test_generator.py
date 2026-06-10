@@ -145,6 +145,27 @@ def test_dungeon():
     assert seen == walkable, "dungeon has unreachable areas"
 
 
+def test_hd_pipeline():
+    from rpg_role import lpc
+    from rpg_role.hd import enhance
+    from rpg_role.monsters import SLIME_COLORS, _draw_slime
+
+    ch = lpc.LpcCharacter("hero", 1)
+    frame = ch.frame("walk", "down", 0)
+    hd = enhance(frame)
+    assert hd.size == (frame.width * 4, frame.height * 4)
+    assert hd.getbbox(), "HD frame is empty"
+    # Deterministic.
+    assert hd.tobytes() == enhance(ch.frame("walk", "down", 0)).tobytes()
+    # Works on the 32px slime frames too.
+    s = enhance(_draw_slime(SLIME_COLORS["blue"], 0, 0, False))
+    assert s.size == (128, 128)
+    # HD sheets are 4x the lpc cell size.
+    sheet = lpc.build_sheet(ch, "attack", hd=True)
+    cell = ch.cell_size("slash") * 4
+    assert sheet.size == (6 * cell, 4 * cell)
+
+
 def test_tiles_render():
     from rpg_role.worldmap import (DUNGEON_TILES, OVERWORLD_TILES, TILE,
                                    draw_tile)
@@ -158,7 +179,8 @@ if __name__ == "__main__":
     for fn in (test_all_jobs_all_animations, test_deterministic,
                test_seeds_differ, test_metadata, test_lpc_all_jobs,
                test_lpc_deterministic, test_lpc_monsters, test_slimes,
-               test_items, test_overworld, test_dungeon, test_tiles_render):
+               test_items, test_overworld, test_dungeon, test_hd_pipeline,
+               test_tiles_render):
         fn()
         print(f"ok: {fn.__name__}")
     print("all tests passed")

@@ -199,37 +199,46 @@ def exports(ch: LpcCharacter) -> dict[str, dict]:
     }
 
 
-def build_sheet(ch: LpcCharacter, name: str) -> Image.Image:
+def build_sheet(ch: LpcCharacter, name: str, hd: bool = False) -> Image.Image:
+    from .hd import enhance
+
     spec = exports(ch)[name]
     source = spec["source"]
     dirs = ["down"] if source == "hurt" else OUT_DIRS
-    cell = ch.cell_size(source)
+    cell = ch.cell_size(source) * (4 if hd else 1)
     out = Image.new("RGBA", (len(spec["frames"]) * cell, len(dirs) * cell),
                     (0, 0, 0, 0))
     for r, d in enumerate(dirs):
         for c, f in enumerate(spec["frames"]):
-            out.paste(ch.frame(source, d, f, spec["fx"]), (c * cell, r * cell))
+            frame = ch.frame(source, d, f, spec["fx"])
+            if hd:
+                frame = enhance(frame)
+            out.paste(frame, (c * cell, r * cell))
     return out
 
 
 def export_character(job: str, seed: int, out_dir: str | Path,
-                     gifs: bool = False) -> Path:
-    root = Path(out_dir) / f"{job}_{seed}_lpc"
+                     gifs: bool = False, hd: bool = False) -> Path:
+    from .hd import enhance
+
+    style = "hd" if hd else "lpc"
+    k = 4 if hd else 1
+    root = Path(out_dir) / f"{job}_{seed}_{style}"
     root.mkdir(parents=True, exist_ok=True)
     ch = LpcCharacter(job, seed)
     table = exports(ch)
 
     meta: dict = {
-        "character": {"job": job, "seed": seed, "style": "lpc"},
-        "frame_size": FRAME,
+        "character": {"job": job, "seed": seed, "style": style},
+        "frame_size": FRAME * k,
         "layers": [rel for _, rel in ch.layers],
         "license": "art CC-BY-SA 3.0 / GPL 3.0 — see assets/lpc/ATTRIBUTION.md",
         "animations": {},
     }
     for name, spec in table.items():
-        sheet = build_sheet(ch, name)
+        sheet = build_sheet(ch, name, hd=hd)
         sheet.save(root / f"{name}.png")
-        cell = ch.cell_size(spec["source"])
+        cell = ch.cell_size(spec["source"]) * k
         dirs = ["down"] if spec["source"] == "hurt" else OUT_DIRS
         meta["animations"][name] = {
             "file": f"{name}.png", "frame_size": cell, "rows": dirs,
@@ -241,13 +250,16 @@ def export_character(job: str, seed: int, out_dir: str | Path,
         for name, spec in table.items():
             direction = "down" if spec["source"] == "hurt" else \
                 ("right" if name in ("attack", "special") else "down")
-            cell = ch.cell_size(spec["source"])
+            cell = ch.cell_size(spec["source"]) * k
             imgs = []
             for f in spec["frames"]:
+                frame = ch.frame(spec["source"], direction, f, spec["fx"])
+                if hd:
+                    frame = enhance(frame)
                 bg = Image.new("RGBA", (cell, cell), (*GIF_BG, 255))
-                bg.alpha_composite(ch.frame(spec["source"], direction, f,
-                                            spec["fx"]))
-                bg = bg.resize((cell * 2, cell * 2), Image.NEAREST)
+                bg.alpha_composite(frame)
+                if not hd:
+                    bg = bg.resize((cell * 2, cell * 2), Image.NEAREST)
                 imgs.append(bg.convert("P", palette=Image.ADAPTIVE))
             imgs[0].save(root / f"preview_{name}.gif", save_all=True,
                          append_images=imgs[1:],
