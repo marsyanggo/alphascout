@@ -51,9 +51,32 @@ def test_metadata():
     json.dumps(meta)  # must be serializable
 
 
+def test_lpc_all_jobs():
+    from rpg_role import lpc
+
+    for job in JOBS:
+        ch = lpc.LpcCharacter(job, seed=5)
+        for name, spec in lpc.exports(ch).items():
+            sheet = lpc.build_sheet(ch, name)
+            cell = ch.cell_size(spec["source"])
+            rows = 1 if spec["source"] == "hurt" else 4
+            assert sheet.size == (len(spec["frames"]) * cell, rows * cell), \
+                f"{job}/{name} unexpected sheet size {sheet.size}"
+
+
+def test_lpc_deterministic():
+    from rpg_role import lpc
+
+    a = lpc.LpcCharacter("hero", 9)
+    b = lpc.LpcCharacter("hero", 9)
+    assert a.layers == b.layers
+    assert png_bytes(a.sheet) == png_bytes(b.sheet)
+
+
 if __name__ == "__main__":
     for fn in (test_all_jobs_all_animations, test_deterministic,
-               test_seeds_differ, test_metadata):
+               test_seeds_differ, test_metadata, test_lpc_all_jobs,
+               test_lpc_deterministic):
         fn()
         print(f"ok: {fn.__name__}")
     print("all tests passed")

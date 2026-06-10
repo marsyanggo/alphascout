@@ -1,8 +1,18 @@
 # RPG_Role — 復古 RPG 角色點陣圖生成器 🎮
 
-自動生成 DQ(勇者鬥惡龍)風格的 32×32 復古像素角色,每個角色附帶完整動作組:
+自動生成 DQ(勇者鬥惡龍)風格的復古像素角色,每個角色附帶完整動作組:
 **待機、移動(四方向)、攻擊、絕招、施法、受傷、倒下**。
 不需要美術功底 — 給定職業 + 種子(seed)就能穩定重現同一隻角色。
+
+## 兩種畫風
+
+| 風格 | 影格 | 來源 | 適合 |
+|------|------|------|------|
+| **lpc**(預設) | 64×64(武器揮擊 128/192) | [Universal LPC Spritesheet](https://github.com/sanderfrenken/Universal-LPC-Spritesheet-Character-Generator) 美術師手繪圖層合成 | 正式遊戲畫面 |
+| **mini** | 32×32 | 純程式繪製(零素材依賴) | 雛型 / 小地圖 / 復古極簡風 |
+
+LPC 素材已抽選 vendor 在 `assets/lpc/`(CC-BY-SA 3.0 / GPL 3.0,
+發佈遊戲時需附 `assets/lpc/ATTRIBUTION.md` 的作者名單;本專案程式碼本身為 MIT)。
 
 ## 特色
 
@@ -36,11 +46,14 @@ pip install pillow
 ```bash
 cd RPG_Role
 
-# 生成一隻角色(所有動作)
+# 生成一隻角色(所有動作,預設 lpc 高精緻風格)
 python3 -m rpg_role generate --job hero --seed 7 --out out/ --gifs
 
 # 一次生成全部 6 職業
-python3 -m rpg_role party --seed 1 --out out/ --scale 2 --gifs
+python3 -m rpg_role party --seed 1 --out out/ --gifs
+
+# 32px 極簡程序風
+python3 -m rpg_role party --seed 1 --out out/ --style mini --scale 2
 
 # 列出職業
 python3 -m rpg_role jobs
@@ -49,15 +62,27 @@ python3 -m rpg_role jobs
 輸出結構:
 
 ```
-out/hero_7/
+out/hero_7_lpc/
   idle.png  walk.png  attack.png  special.png  cast.png  hurt.png  dead.png
-  spritesheet.png    # 所有動作堆疊的總表
-  spritesheet.json   # 引擎用中繼資料
+  spritesheet.json   # 引擎用中繼資料(各動作影格大小、列序、fps)
   preview_*.gif      # 動畫預覽(--gifs)
 ```
 
-sprite sheet 格式:每列一個方向(順序 down, left, right, up),每欄一個影格,
-影格固定 32×32(`--scale` 僅放大輸出像素,不改變格數)。
+sprite sheet 格式:每列一個方向(順序 down, left, right, up),每欄一個影格。
+lpc 風格基本影格 64×64;攻擊/絕招因武器揮擊範圍使用 128 或 192 的影格
+(實際大小記錄在 `spritesheet.json` 的每個動作裡)。mini 風格固定 32×32。
+
+### 更新 / 擴充 LPC 素材
+
+素材清單定義在 `rpg_role/lpc_manifest.py`(想換衣服顏色、武器、髮型就改這裡),
+然後重新抽取:
+
+```bash
+git clone --depth 1 --filter=blob:none --sparse \
+  https://github.com/sanderfrenken/Universal-LPC-Spritesheet-Character-Generator /tmp/lpc
+(cd /tmp/lpc && git sparse-checkout set spritesheets sheet_definitions sources)
+python3 tools/vendor_lpc.py /tmp/lpc
+```
 
 ## 程式生成原理
 
