@@ -72,6 +72,19 @@ def main(argv: list[str] | None = None) -> None:
     mp.add_argument("--seed", type=int, default=0)
     mp.add_argument("--out", default="out")
 
+    art = sub.add_parser("aiart", help="AI-generated battle art / portraits")
+    art.add_argument("--subject", required=True,
+                     help='e.g. "golden dragon boss" or "young hero, red cape"')
+    art.add_argument("--kind", choices=["monster", "portrait", "item", "scene"],
+                     default="monster")
+    art.add_argument("--provider",
+                     choices=["auto", "openai", "stability", "pollinations"],
+                     default="auto")
+    art.add_argument("--seed", type=int, default=0)
+    art.add_argument("--out", default="out")
+    art.add_argument("--no-pixel", action="store_true",
+                     help="keep full-res AI art (skip retro pixelation)")
+
     sub.add_parser("jobs", help="list available jobs and monsters")
 
     args = parser.parse_args(argv)
@@ -90,6 +103,13 @@ def main(argv: list[str] | None = None) -> None:
 
     if args.cmd == "map":
         print(export_map_cmd(args))
+        return
+
+    if args.cmd == "aiart":
+        from .ai import export_ai_art
+        print(export_ai_art(args.subject, args.kind, args.out,
+                            seed=args.seed, provider=args.provider,
+                            pixel_grid=None if args.no_pixel else 96))
         return
 
     hd = getattr(args, "style", "hd") == "hd"

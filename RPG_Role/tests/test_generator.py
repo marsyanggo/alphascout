@@ -166,6 +166,24 @@ def test_hd_pipeline():
     assert sheet.size == (6 * cell, 4 * cell)
 
 
+def test_ai_postprocess():
+    """The AI art post pipeline must work offline on synthetic input."""
+    from PIL import Image, ImageDraw
+
+    from rpg_role.ai import PROMPTS, remove_background, stylize
+
+    img = Image.new("RGB", (512, 512), (250, 250, 248))
+    d = ImageDraw.Draw(img)
+    d.ellipse((150, 150, 360, 400), fill=(60, 120, 200))
+    cut = remove_background(img.convert("RGBA"))
+    assert cut.getpixel((5, 5))[3] == 0, "background not removed"
+    assert cut.getpixel((255, 275))[3] == 255, "subject was erased"
+    out = stylize(img.convert("RGBA"))
+    assert out.getbbox(), "stylized output is empty"
+    for kind, tpl in PROMPTS.items():
+        assert "{subject}" in tpl, kind
+
+
 def test_tiles_render():
     from rpg_role.worldmap import (DUNGEON_TILES, OVERWORLD_TILES, TILE,
                                    draw_tile)
@@ -180,6 +198,7 @@ if __name__ == "__main__":
                test_seeds_differ, test_metadata, test_lpc_all_jobs,
                test_lpc_deterministic, test_lpc_monsters, test_slimes,
                test_items, test_overworld, test_dungeon, test_hd_pipeline,
+               test_ai_postprocess,
                test_tiles_render):
         fn()
         print(f"ok: {fn.__name__}")
